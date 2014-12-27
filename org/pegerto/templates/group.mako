@@ -23,10 +23,11 @@
 					<tr id="{{groupid}}">
 						<td></td>
 						<td>{{groupname}}</td>
-						<td>0</td>
-						<td><input type="image" src="/static/images/icn_edit.png"
-							title="Edit"><input type="image"
-							src="/static/images/icn_trash.png" title="Trash"></td>
+						<td>{{appscount}}</td>
+						<td>
+							<input type="image" id="edit" src="/static/images/icn_edit.png" title="Edit">
+							<input type="image" id="del" src="/static/images/icn_trash.png" title="Trash">
+						</td>
 					</tr>
 					</template>
 				</tbody>
@@ -60,6 +61,12 @@
 		</div>
 	</footer>
 </article>
+
+<div id="dialog-confirm" title="Delete this item?" style="display:none;">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;">
+  	</span>These items will be permanently deleted and cannot be recovered. Are you sure?
+  </p>
+</div>
 
 
 <script type="text/javascript">
@@ -101,25 +108,44 @@
 			
 			// Configure default behaivour to add an application
 			$('#sendgroup').on('click', addGroup);
-			grouplist.on('click', 'input', function(){
-				console.log($this);
-			});
 			
-			
-			
-			// Load groups
-			$.ajax({
-				 url: "/group/list/",
-				 dataType: "json",
-				 success: function(result, status){
-					 $.each(result.list, function(){
-					 	var group = {
-					   		groupname: this.name,
-					   		groupid: this.id
-					 	};
-					 	applist.append(Mustache.to_html(grouplisttemplate, group));
-					 });
-				 }
-			});
-	}); 
+
+	grouplist.on('click', 'input', function() {
+			if ($(this).attr('id') === "del") {
+				console.log("delete");
+				$("#dialog-confirm").dialog({
+					resizable : false,
+					height : 180,
+					modal : true,
+					buttons : {
+						"Delete this group" : function() {
+							$(this).dialog("close");
+						},
+						Cancel : function() {
+							$(this).dialog("close");
+						}
+					}
+				});
+			} else {
+				console.log("edit");
+			}
+		});
+
+		// Load groups
+		$.ajax({
+			url : "/group/list/",
+			dataType : "json",
+			success : function(result, status) {
+				$.each(result.list,
+						function() {
+							var group = {
+								groupname : this.name,
+								groupid : this.id
+							};
+							grouplist.append(Mustache.to_html(
+									grouplisttemplate, group));
+						});
+			}
+		});
+	});
 </script>
