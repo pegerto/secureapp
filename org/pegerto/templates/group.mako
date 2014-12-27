@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*- <%inherit file="layout.mako"/> <%inherit
-file="layout.mako"/>
+# -*- coding: utf-8 -*- 
+<%inherit file="layout.mako"/>
 
 
 <article class="module width_full">
@@ -67,7 +67,7 @@ file="layout.mako"/>
 		
 			// Cached dom values
 			var grouplisttemplate = $('#grouprow').html()
-			var applist = $('#grouplist')
+			var grouplist = $('#grouplist')
 			
 			var addGroup = function(){
 				var group = {
@@ -85,7 +85,7 @@ file="layout.mako"/>
 							alert (result.errordes)
 						 } else {
 							 group.groupid = result.groupkey
-							 applist.append(Mustache.to_html(grouplisttemplate, group));
+							 grouplist.append(Mustache.to_html(grouplisttemplate, group));
 						 }
 					 }
 					});
@@ -101,7 +101,12 @@ file="layout.mako"/>
 			
 			// Configure default behaivour to add an application
 			$('#sendgroup').on('click', addGroup);
-
+			grouplist.on('click', 'input', function(){
+				console.log($this);
+			});
+			
+			
+			
 			// Load groups
 			$.ajax({
 				 url: "/group/list/",

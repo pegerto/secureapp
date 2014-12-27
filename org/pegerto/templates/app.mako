@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*- <%inherit file="layout.mako"/>
+# -*- coding: utf-8 -*- 
+<%inherit file="layout.mako"/>
 
 <article class="module width_full">
 	<header>
