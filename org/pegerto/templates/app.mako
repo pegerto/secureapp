@@ -124,6 +124,23 @@
 			$('#sendapp').on('click', addApplication);
 			
 			// Load application list
+			$.ajax({
+				url : "/app/list/",
+				dataType : "json",
+				success : function(result, status) {
+					$.each(result.list,
+							function() {
+								var app = {
+									appname: this.appname,
+					  				appid: this.appid,
+					    			token: this.token,
+					    			group: "nogroup"
+								};
+								applist.append(Mustache.to_html(
+										applisttemplate, app));
+							});
+				}
+			});
 			
 	}); 
 </script>

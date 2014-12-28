@@ -63,11 +63,17 @@ def app(request):
     return {}
 
 
+@view_config(route_name='applist', renderer='json')
+def applist(request):
+    global applications
+    return {'list': applications}
+
+
 @view_config(route_name='appnew', renderer='json')
 def appnew(request):
     global applications
     rval = request.json_body
-    print rval
+    applications[rval['appid']] = rval
     return {}
 
 
@@ -145,6 +151,7 @@ def main():
     
     
     config.add_route('app', '/app/')
+    config.add_route('applist', '/app/list/')
     config.add_route('appnew', '/app/new/')
     
     config.add_route('group', '/group/')
