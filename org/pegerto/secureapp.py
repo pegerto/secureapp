@@ -1,10 +1,10 @@
-import datetime;
+import datetime
 import os
-import uuid;
+import uuid
+import views
 
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
-from pyramid.view import view_config
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.renderers import JSON
 
@@ -12,8 +12,6 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 # Global data
 securefilters = {}
-applications = {}
-groups = {}
 
 # Helpers
 def getnewid():
@@ -52,85 +50,6 @@ def discover(request):
     return {'monitorId': _id}
 
 
-@view_config(route_name='filters', renderer='json')
-def filters(request):
-    global securefilters
-    return {'filters' : securefilters}
-    
-    
-@view_config(route_name='app', renderer='app.mako')
-def app(request):
-    return {}
-
-
-@view_config(route_name='applist', renderer='json')
-def applist(request):
-    global applications
-    return {'list': applications}
-
-
-@view_config(route_name='appnew', renderer='json')
-def appnew(request):
-    global applications
-    rval = request.json_body
-    applications[rval['appid']] = rval
-    return {}
-
-
-@view_config(route_name='group', renderer='group.mako')
-def group(request):
-    return {}
-
-
-@view_config(route_name='grouplist', renderer='json')
-def grouplist(request):
-    global groups
-    return {'list': groups}
-
-
-@view_config(route_name='groupnew', renderer='json')
-def groupnew(request):
-    global groups
-    rval = request.json_body
-    error = False
-    errordes = '' 
-    if 'groupname' in rval:
-        groupkey = rval['groupname'].strip().replace(' ','-')
-        if groupkey in groups:
-            error = True
-            errordes = '{} is already an existing group'.format(rval['groupname'])
-        else:
-            groups[groupkey] = dict()
-            groups[groupkey]['id'] = groupkey
-            groups[groupkey]['name'] = rval['groupname']
-    return {'error': error, 'errordes': errordes, 'groupkey': groupkey}
-
-
-@view_config(route_name='groupdelete', renderer='json')
-def groupdelete(request):
-    global groups
-    error = False
-    errordes = ''
-    _id = request.matchdict['groupid']
-    
-    if _id:
-        if _id in groups:
-            #TODO: Review if group have applications 
-            groups.pop(_id)
-        else:
-            error = True
-            errordes = '{} is not a valid group key'.format(_id)
-    else:
-        error = True
-        errordes = 'Group not provided' 
-    return {'error': error, 'errordes': errordes}
-
-
-@view_config(route_name='index', renderer='index.mako')
-def index(request):
-    return {}
-
-
 def main():
     settings = {}
     settings['mako.directories'] = os.path.join(here, 'templates')
@@ -161,7 +80,7 @@ def main():
     
     config.add_view(discover, route_name='discover', renderer='json')
     config.add_view(configuration, route_name='configuration', renderer='json')
-    config.scan()
+    config.scan(views)
     
     config.add_static_view('static', os.path.join(here, 'static'))
     config.include('pyramid_mako')

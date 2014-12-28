@@ -152,8 +152,8 @@
 				$.each(result.list,
 						function() {
 							var group = {
-								groupname : this.name,
-								groupid : this.id
+								groupname : this.groupname,
+								groupid : this.groupid
 							};
 							grouplist.append(Mustache.to_html(
 									grouplisttemplate, group));
