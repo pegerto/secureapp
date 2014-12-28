@@ -112,14 +112,27 @@
 
 	grouplist.on('click', 'input', function() {
 			if ($(this).attr('id') === "del") {
-				console.log("delete");
+				var group = $(this).closest('tr');
 				$("#dialog-confirm").dialog({
 					resizable : false,
 					height : 180,
 					modal : true,
 					buttons : {
 						"Delete this group" : function() {
-							$(this).dialog("close");
+							var dialog =  $(this);
+							$.ajax({
+								 url: "/group/delete/" + group.attr('id'),
+								 type: "DELETE",
+								 dataType: "json",
+								 success: function(result, status){
+									 if (result.error){
+										 alert(result.errordes);
+									 } else {
+									 	group.remove();
+									 	dialog.dialog("close");
+									 }
+								 }
+								});	
 						},
 						Cancel : function() {
 							$(this).dialog("close");

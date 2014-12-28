@@ -62,6 +62,7 @@ def filters(request):
 def app(request):
     return {}
 
+
 @view_config(route_name='appnew', renderer='json')
 def appnew(request):
     global applications
@@ -99,6 +100,26 @@ def groupnew(request):
     return {'error': error, 'errordes': errordes, 'groupkey': groupkey}
 
 
+@view_config(route_name='groupdelete', renderer='json')
+def groupdelete(request):
+    global groups
+    error = False
+    errordes = ''
+    _id = request.matchdict['groupid']
+    
+    if _id:
+        if _id in groups:
+            #TODO: Review if group have applications 
+            groups.pop(_id)
+        else:
+            error = True
+            errordes = '{} is not a valid group key'.format(_id)
+    else:
+        error = True
+        errordes = 'Group not provided' 
+    return {'error': error, 'errordes': errordes}
+
+
 @view_config(route_name='index', renderer='index.mako')
 def index(request):
     return {}
@@ -121,13 +142,15 @@ def main():
     config.add_route('configuration', '/configuration/')
     config.add_route('filters', '/filters')
     config.add_route('index', '/')
-    config.add_route('app', '/app/list/')
+    
+    
+    config.add_route('app', '/app/')
     config.add_route('appnew', '/app/new/')
     
     config.add_route('group', '/group/')
     config.add_route('grouplist', '/group/list/')
     config.add_route('groupnew', '/group/new/')
-    
+    config.add_route('groupdelete', '/group/delete/{groupid}')
     
     config.add_view(discover, route_name='discover', renderer='json')
     config.add_view(configuration, route_name='configuration', renderer='json')
