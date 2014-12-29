@@ -9,20 +9,20 @@ class Application:
         self.token = token
     
     def groupname(self):
-        return ""
+        return getgroup(self.group).groupname
     
     def __json__(self, request):
         return {'appid': self.appid, 'appname': self.appname, \
-                'group': self.group, 'token': self.token}
+                'group': self.group, 'groupname': self.groupname(), 'token': self.token}
 
 
 class Group:
     def __init__(self, groupid, groupname):
         self.groupid = groupid
-        self.grouname = groupname
+        self.groupname = groupname
 
     def __json__(self, request):
-        return {'groupid': self.groupid, 'groupname': self.grouname}
+        return {'groupid': self.groupid, 'groupname': self.groupname}
 
 
 class IdAlreadyExists(Exception):
@@ -43,9 +43,11 @@ class IdNotExists(Exception):
         return repr(self.desc)
 
 
-
 def newapp(appid, app):
     global applications
+    global groups
+    if not app.group in groups:
+        raise IdNotExists(app.group, 'group {} is not a valid group at the system'.format(app.group))
     if appid in applications:
         raise IdAlreadyExists(appid,'{} key already exists'.format(appid))
     applications[appid] = app
@@ -67,6 +69,15 @@ def getgroups():
     global groups
     return groups
 
+
+def getgroup(groupid):
+    global groups
+    print groups
+    if groupid in groups:
+        return groups[groupid]
+    else:
+        raise IdNotExists(groupid, '{} is not a valid group id'.format(groupid))
+    
 
 def deletegroup(groupid):
     global groups

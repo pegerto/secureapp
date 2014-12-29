@@ -12,7 +12,7 @@ def filters(request):
     
 @view_config(route_name='app', renderer='app.mako')
 def app(request):
-    return {}
+    return {'groups': getgroups()}
 
 
 @view_config(route_name='applist', renderer='json')
@@ -27,6 +27,8 @@ def appnew(request):
     try:
         newapp(rval['appid'],app)
     except IdAlreadyExists as e:
+        return {'error': True, 'errordes': str(e)}
+    except IdNotExists as e:
         return {'error': True, 'errordes': str(e)}
     return {'error': False, 'errordes': ''}
 

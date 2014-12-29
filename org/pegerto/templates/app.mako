@@ -66,10 +66,13 @@
 		</fieldset>
 		<fieldset style="width: 48%; float: left; margin-right: 3%;">
 			<!-- to make two field float next to one another, adjust values accordingly -->
-			<label>Group</label> <select style="width: 92%;">
-				<option>Extranet</option>
-				<option>Finatial</option>
-				<option>Pricing</option>
+			<label>Group</label> 
+			<select id="group" style="width: 92%;" >
+			% if groups:
+  				% for group in groups:
+					<option id="${group}">${groups[group].groupname}</option>
+			 	% endfor
+			 % endif
 			</select>
 		</fieldset>
 		</fieldset>
@@ -97,7 +100,7 @@
 					appname: $('#appname').val(),
   					appid: $('#appid').val(),
     				token: $('#token').val(),
-    				group: "nogroup"
+    				group: $('#group').children(":selected").attr("id")
 				};
 				
 				$.ajax({
@@ -106,8 +109,13 @@
 					 type: "POST",
 					 contentType: 'application/json; charset=utf-8',
 					 data: JSON.stringify(app),
-					 success: function(data, status){
-						 applist.append(Mustache.to_html(applisttemplate, app));
+					 success: function(result, status){
+						 if (result.error){
+							 alert(result.errordes)
+						 }else{
+							 app.group = $('#group').val()
+							 applist.append(Mustache.to_html(applisttemplate, app));
+						 }
 					 }
 					});
 				
@@ -134,7 +142,7 @@
 									appname: this.appname,
 					  				appid: this.appid,
 					    			token: this.token,
-					    			group: "nogroup"
+					    			group: this.groupname
 								};
 								applist.append(Mustache.to_html(
 										applisttemplate, app));
